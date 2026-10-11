@@ -9,25 +9,16 @@ int get(int x){
 }
 int main(){
     cin>>n;
-    for(int i=1;i<=n;i++){
-        cin>>opt[i]>>x[i];
-        xm[i]=x[i];
-    }
-    sort(xm+1,xm+1+n);
-    ss=unique(xm+1,xm+1+n)-xm-1;
-    dysegment_balance<int,int>t;t.init(1,ss);
-    for(int i=1;i<=1;i++){
-        int k=get(x[i]);
-        if(opt[i]==1)t.insert(k,1);
-        if(opt[i]==2)t.insert(k,-1);
-        if(opt[i]==3)cout<<t.rnk(k-1)+1<<"\n";
-        if(opt[i]==4)cout<<xm[t.kth(x[i])]<<"\n";
-        if(opt[i]==5){
-            cout<<xm[t.get_pre(k)]<<"\n";
-        }
-        if(opt[i]==6){
-            cout<<xm[t.get_nxt(k)]<<"\n";
-        }
+    treap<int>t;
+    while(n--){
+        int opt,x;
+        cin>>opt>>x;
+        if(opt==1)t.insert(x);
+        if(opt==2)t.remove(x);
+        if(opt==3)cout<<t.rnk(x-1)+1<<"\n";
+        if(opt==4)cout<<t.kth(x)<<"\n";
+        if(opt==5)cout<<t.get_pre(x)<<"\n";
+        if(opt==6)cout<<t.get_nxt(x)<<"\n";
     }
     return 0;
 }

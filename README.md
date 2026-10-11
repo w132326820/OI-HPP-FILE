@@ -256,6 +256,12 @@ signed main(){
 - `dysegment_balance<T,T2>`：定义一个此类，空间三个 `std::vector<T>`；
 - 其余线段树模板。
 
+无旋 Treap：
+
+- `treap<T>t`：定义一个存储类型为 `T` 的平衡树，占用空间 $5$ 个 `std::vector`；
+- `void t.clear()`：清空 $t$，复杂度 $\mathcal{O}(n)$；
+- 其余操作同线段树，不过注意当 `get_pre` 和 `get_nxt` 函数的参数为最小或最大值时，**不保证该函数行为**。
+
 **【示例代码】**
 
 [【模板】普通平衡树](https://www.luogu.com.cn/record/301767462)。
@@ -335,6 +341,39 @@ int main(){
         if(opt[i]==6){
             cout<<xm[t.get_nxt(k)]<<"\n";
         }
+    }
+    return 0;
+}
+```
+
+::::
+
+[【模板】普通平衡树](https://www.luogu.com.cn/record/302434691)。
+
+::::success[Code]
+
+```cpp
+#include <bits/stdc++.h>
+#include "waoi.hpp"
+using namespace std;
+using namespace WAOI_lib;
+const int N=500050;
+int n,opt[N],xm[N],x[N],ss;
+int get(int x){
+    return lower_bound(xm+1,xm+1+ss,x)-xm;
+}
+int main(){
+    cin>>n;
+    treap<int>t;
+    while(n--){
+        int opt,x;
+        cin>>opt>>x;
+        if(opt==1)t.insert(x);
+        if(opt==2)t.remove(x);
+        if(opt==3)cout<<t.rnk(x-1)+1<<"\n";
+        if(opt==4)cout<<t.kth(x)<<"\n";
+        if(opt==5)cout<<t.get_pre(x)<<"\n";
+        if(opt==6)cout<<t.get_nxt(x)<<"\n";
     }
     return 0;
 }

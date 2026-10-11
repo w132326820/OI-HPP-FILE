@@ -1,4 +1,7 @@
 #include <vector>
+#include <random>
+#include <ctime>
+#include <cstddef>
 namespace WAOI_lib{
     template<class T> class fenwick_balance{
         std::vector<T>c;
@@ -139,4 +142,94 @@ namespace WAOI_lib{
         T get_pre(T2 x){return rnk(x-1)==0?L-1:kth(rnk(x-1));}
         T get_nxt(T2 x){return rnk(x)==num[rt]?R+1:kth(rnk(x)+1);}
     }; 
+    template<class T> class treap{
+        std::vector<int>ls,rs,sz;
+        std::vector<unsigned>dat;
+        std::vector<T>val;
+        std::mt19937 rnd;
+        int tot,rt;
+        int newnode(T x){
+            ++tot;
+            ls.push_back(0);
+            rs.push_back(0);
+            sz.push_back(1);
+            val.push_back(x);
+            dat.push_back(rnd());
+            return tot;
+        }
+        void up(int p){sz[p]=sz[ls[p]]+sz[rs[p]]+1;}
+        void split(int p,T x,int &l,int &r){
+            if(!p)return (void)(l=r=0);
+            if(val[p]<=x){
+                l=p;
+                split(rs[p],x,rs[p],r);
+            }
+            else{
+                r=p;
+                split(ls[p],x,l,ls[p]);
+            }
+            up(p);
+        }
+        int merge(int l,int r){
+            if(!l||!r)return l+r;
+            if(dat[l]>dat[r]){
+                rs[l]=merge(rs[l],r);
+                up(l);
+                return l;
+            }
+            else{
+                ls[r]=merge(l,ls[r]);
+                up(r);
+                return r;
+            }
+        }        
+        T kths(int p,int x){
+            if(sz[ls[p]]>=x)return kths(ls[p],x);
+            if(sz[ls[p]]+1==x)return val[p];
+            return kths(rs[p],x-1-sz[ls[p]]);
+        }
+    public:
+        void clear(){
+            tot=0;rt=0;
+            ls.clear(),rs.clear();
+            dat.clear(),val.clear(),sz.clear();
+            ls.push_back(0),rs.push_back(0);
+            dat.push_back(0),val.push_back(0),sz.push_back(0);
+        }
+        treap(){rnd=std::mt19937((unsigned)time(NULL));clear();}
+        void insert(T x){
+            int t=newnode(x),l,r;
+            split(rt,x,l,r);
+            rt=merge(merge(l,t),r);
+        }
+        void remove(T x){
+            int l,p,r;
+            split(rt,x,l,r);
+            split(l,x-1,l,p);
+            p=merge(ls[p],rs[p]);
+            rt=merge(merge(l,p),r);
+        }
+        int rnk(T x){
+            int l,r;
+            split(rt,x,l,r);
+            int res=sz[l];
+            rt=merge(l,r);
+            return res;
+        }
+        T kth(int x){return kths(rt,x);}
+        T get_pre(T x){
+            int l,r;
+            split(rt,x-1,l,r);
+            T res=kths(l,sz[l]);
+            rt=merge(l,r);
+            return res;
+        }
+        T get_nxt(T x){
+            int l,r;
+            split(rt,x,l,r);
+            T res=kths(r,1);
+            rt=merge(l,r);
+            return res;
+        }
+    };
 }
